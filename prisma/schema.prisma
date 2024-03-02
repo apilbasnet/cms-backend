@@ -14,15 +14,25 @@ model User {
     email          String         @unique
     address        String
     password       String
+    token          Token[]
     activeSemester Semester?      @relation(fields: [semesterId], references: [id])
     semesterId     Int?
     role           RoleType
-    course         Course         @relation(fields: [courseId], references: [id])
-    courseId       Int
+    course         Course?        @relation(fields: [courseId], references: [id])
+    courseId       Int?
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @updatedAt
     Notification   Notification[]
     Subject        Subject[]
+}
+
+model Token {
+    id        Int      @id @default(autoincrement())
+    token     String   @unique
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Course {
