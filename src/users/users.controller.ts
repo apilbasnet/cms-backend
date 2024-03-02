@@ -28,7 +28,8 @@ export class UsersController {
   @UseGuards(AuthGuard)
   @Get('/me')
   async me(@Req() req: Request) {
-    const user = req as any['user'];
+    const user = (req as any)['user'];
+
     return {
       name: user.name,
       email: user.email,

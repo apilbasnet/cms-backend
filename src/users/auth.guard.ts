@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
         where: { token },
         include: { user: true },
       });
-      request['user'] = payload;
+      request['user'] = payload.user;
     } catch {
       throw new UnauthorizedException();
     }
