@@ -1,0 +1,74 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model User {
+    id             Int            @id @default(autoincrement())
+    name           String
+    contact        String
+    email          String         @unique
+    address        String
+    password       String
+    activeSemester Semester?      @relation(fields: [semesterId], references: [id])
+    semesterId     Int?
+    role           RoleType
+    course         Course         @relation(fields: [courseId], references: [id])
+    courseId       Int
+    createdAt      DateTime       @default(now())
+    updatedAt      DateTime       @updatedAt
+    Notification   Notification[]
+    Subject        Subject[]
+}
+
+model Course {
+    id        Int        @id @default(autoincrement())
+    name      String
+    users     User[]
+    semester  Semester[]
+    createdAt DateTime   @default(now())
+    updatedAt DateTime   @updatedAt
+}
+
+model Semester {
+    id        Int       @id @default(autoincrement())
+    name      String
+    subjects  Subject[]
+    course    Course    @relation(fields: [courseId], references: [id])
+    courseId  Int
+    users     User[]
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
+}
+
+model Subject {
+    id         Int      @id @default(autoincrement())
+    name       String
+    semester   Semester @relation(fields: [semesterId], references: [id])
+    semesterId Int
+    courseId   Int
+    teacher    User     @relation(fields: [teacherId], references: [id])
+    teacherId  Int
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+}
+
+model Notification {
+    id        Int      @id @default(autoincrement())
+    title     String
+    message   String
+    sentBy    User     @relation(fields: [sentById], references: [id])
+    sentById  Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+enum RoleType {
+    ADMIN
+    TEACHER
+    STUDENT
+}
