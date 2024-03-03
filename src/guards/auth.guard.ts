@@ -1,6 +1,6 @@
 import { CanActivate, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { ContextData } from 'src/store.module';
+import { ContextData } from '../store.module';
 
 @Injectable()
 export class AuthGuard implements CanActivate {

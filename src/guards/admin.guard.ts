@@ -1,7 +1,7 @@
 import { CanActivate, Injectable, UnauthorizedException } from '@nestjs/common';
 import { RoleType } from '@prisma/client';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { ContextData } from 'src/store.module';
+import { ContextData } from '../store.module';
 
 @Injectable()
 export class AdminGuard implements CanActivate {

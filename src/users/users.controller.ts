@@ -10,9 +10,9 @@ import {
 import { LoginDto } from './dto/login.dto';
 import { UsersService } from './users.service';
 import { AuthGuard } from '../guards/auth.guard';
-import { ContextData } from 'src/store.module';
+import { ContextData } from '../store.module';
 import { AsyncLocalStorage } from 'async_hooks';
-import { AdminGuard } from 'src/guards/admin.guard';
+import { AdminGuard } from '../guards/admin.guard';
 import {
   CreateStudentProfileDto,
   CreateTeacherProfileDto,

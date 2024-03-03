@@ -8,10 +8,10 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { AuthGuard } from 'src/guards/auth.guard';
+import { AuthGuard } from '../guards/auth.guard';
 import { CreateCourseDto } from './dto/course.dto';
 import { CoursesService } from './courses.service';
-import { AdminGuard } from 'src/guards/admin.guard';
+import { AdminGuard } from '../guards/admin.guard';
 import { CreateSubjectDto, EditSubjectDto } from './dto/subject.dto';
 
 @Controller('courses')
@@ -33,13 +33,13 @@ export class CoursesController {
   @UseGuards(AdminGuard)
   @Patch('/:id')
   async editCourse(@Param('id') id: number, @Body() body: CreateCourseDto) {
-    return this.service.editCourse(id, body);
+    return this.service.editCourse(Number(id), body);
   }
 
   @UseGuards(AdminGuard)
   @Delete('/:id')
   async deleteCourse(@Param('id') id: number) {
-    return this.service.deleteCourse(id);
+    return this.service.deleteCourse(Number(id));
   }
 
   @UseGuards(AdminGuard)
