@@ -1,34 +1,76 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
-  Header,
+  Param,
   Post,
-  Req,
   UseGuards,
 } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto.js';
-import { UsersService } from './users.service.js';
-import { AuthGuard } from './auth.guard.js';
-import { Request } from 'express';
+import { LoginDto } from './dto/login.dto';
+import { UsersService } from './users.service';
+import { AuthGuard } from '../guards/auth.guard';
+import { ContextData } from 'src/store.module';
+import { AsyncLocalStorage } from 'async_hooks';
+import { AdminGuard } from 'src/guards/admin.guard';
+import {
+  CreateStudentProfileDto,
+  CreateTeacherProfileDto,
+  EditTeacherProfileDto,
+} from './dto/profile.dto';
 
 @Controller('users')
 export class UsersController {
-  public constructor(private readonly usersService: UsersService) {}
+  public constructor(
+    private readonly usersService: UsersService,
+    private readonly store: AsyncLocalStorage<ContextData>,
+  ) {}
 
-  @Post('/create')
-  create(): string {
-    return 'This action adds a new user';
+  @UseGuards(AdminGuard)
+  @Post('/teacher')
+  createTeacher(@Body() body: CreateTeacherProfileDto) {
+    return this.usersService.createTeacher(body);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/student')
+  createStudent(@Body() body: CreateStudentProfileDto) {
+    return this.usersService.createStudent(body);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/teacher/:id')
+  editTeacher(@Param() id: number, @Body() body: EditTeacherProfileDto) {
+    return this.usersService.editTeacher(id, body);
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/student/:id')
+  editStudent(@Param() id: number, @Body() body: CreateStudentProfileDto) {
+    return this.usersService.editStudent(id, body);
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete('/teacher/:id')
+  deleteTeacher(@Param() id: number) {
+    return this.usersService.deleteTeacher(id);
+  }
+
+  @UseGuards(AdminGuard)
+  @Delete('/student/:id')
+  deleteStudent(@Param() id: number) {
+    return this.usersService.deleteStudent(id);
   }
 
   @Post('/login')
   async login(@Body() body: LoginDto) {
     return this.usersService.login(body);
   }
+
   @UseGuards(AuthGuard)
   @Get('/me')
-  async me(@Req() req: Request) {
-    const user = (req as any)['user'];
+  async me() {
+    const user = this.store.getStore()!.user!;
 
     return {
       name: user.name,

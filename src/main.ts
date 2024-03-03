@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module.js';
+import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import cors from 'cors';
 
@@ -10,4 +10,4 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 8000);
 }
 
-await bootstrap();
+bootstrap();

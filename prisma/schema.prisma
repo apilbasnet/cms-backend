@@ -14,7 +14,7 @@ model User {
     email          String         @unique
     address        String
     password       String
-    token          Token[]
+    token          Token?
     activeSemester Semester?      @relation(fields: [semesterId], references: [id])
     semesterId     Int?
     role           RoleType
@@ -30,7 +30,7 @@ model Token {
     id        Int      @id @default(autoincrement())
     token     String   @unique
     user      User     @relation(fields: [userId], references: [id])
-    userId    Int
+    userId    Int      @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 }
@@ -48,8 +48,8 @@ model Semester {
     id        Int       @id @default(autoincrement())
     name      String
     subjects  Subject[]
-    course    Course    @relation(fields: [courseId], references: [id])
-    courseId  Int
+    course    Course?   @relation(fields: [courseId], references: [id])
+    courseId  Int?
     users     User[]
     createdAt DateTime  @default(now())
     updatedAt DateTime  @updatedAt
@@ -58,6 +58,7 @@ model Semester {
 model Subject {
     id         Int      @id @default(autoincrement())
     name       String
+    code       String   @unique
     semester   Semester @relation(fields: [semesterId], references: [id])
     semesterId Int
     courseId   Int

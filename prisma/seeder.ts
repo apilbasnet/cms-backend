@@ -3,7 +3,7 @@ import { PrismaClient, RoleType } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function seedUsers() {
   const exists = await prisma.user.findMany({
     take: 1,
   });
@@ -22,4 +22,29 @@ async function main() {
   }
 }
 
-await main();
+async function seedSemester() {
+  const exists = await prisma.semester.findMany({
+    take: 1,
+  });
+
+  if (exists.length === 0) {
+    await prisma.semester.createMany({
+      data: Array.from(
+        {
+          length: 8,
+        },
+        (_, i) => ({
+          name: `Semester ${i + 1}`,
+        }),
+      ),
+      skipDuplicates: true,
+    });
+  }
+}
+
+async function main() {
+  await seedUsers();
+  await seedSemester();
+}
+
+main();
