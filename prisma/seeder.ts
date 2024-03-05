@@ -15,7 +15,7 @@ async function seedUsers() {
         address: 'Swastik College',
         contact: '9841234567',
         email: 'admin@swastikcollege.edu.np',
-        password: await hash('susanadmin123'),
+        password: await hash('admin1234'),
         role: RoleType.ADMIN,
       },
     });

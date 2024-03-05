@@ -229,6 +229,10 @@ export class UsersService {
         role: true,
         address: true,
         contact: true,
+        activeSemester: {
+          select: { name: true, id: true },
+        },
+        course: { select: { name: true, id: true } },
       },
     });
 
@@ -253,9 +257,14 @@ export class UsersService {
   }
 
   async deleteStudent(id: number) {
+    await this.prisma.token.deleteMany({
+      where: {
+        userId: Number(id),
+      },
+    });
     const res = await this.prisma.user.delete({
       where: {
-        id,
+        id: Number(id),
         role: RoleType.STUDENT,
       },
     });
