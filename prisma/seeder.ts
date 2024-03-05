@@ -11,7 +11,7 @@ async function seedUsers() {
   if (exists.length === 0) {
     await prisma.user.create({
       data: {
-        name: 'Susan Sunuwar',
+        name: 'Admin',
         address: 'Swastik College',
         contact: '9841234567',
         email: 'admin@swastikcollege.edu.np',
