@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -33,19 +34,25 @@ export class UsersController {
   }
 
   @UseGuards(AdminGuard)
+  @Get('/student')
+  getStudents() {
+    return this.usersService.getStudents();
+  }
+
+  @UseGuards(AdminGuard)
   @Post('/student')
   createStudent(@Body() body: CreateStudentProfileDto) {
     return this.usersService.createStudent(body);
   }
 
   @UseGuards(AdminGuard)
-  @Post('/teacher/:id')
+  @Patch('/teacher/:id')
   editTeacher(@Param() id: number, @Body() body: EditTeacherProfileDto) {
     return this.usersService.editTeacher(id, body);
   }
 
   @UseGuards(AdminGuard)
-  @Post('/student/:id')
+  @Patch('/student/:id')
   editStudent(@Param() id: number, @Body() body: CreateStudentProfileDto) {
     return this.usersService.editStudent(id, body);
   }

@@ -217,6 +217,24 @@ export class UsersService {
     };
   }
 
+  async getStudents() {
+    const students = await this.prisma.user.findMany({
+      where: {
+        role: RoleType.STUDENT,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        address: true,
+        contact: true,
+      },
+    });
+
+    return students;
+  }
+
   async deleteTeacher(id: number) {
     const res = await this.prisma.user.delete({
       where: {
