@@ -118,6 +118,12 @@ export class CoursesService {
     };
   }
 
+  public async getSubject() {
+    const subjects = await this.prisma.subject.findMany();
+
+    return subjects;
+  }
+
   public async editSubject(id: number, body: EditSubjectDto) {
     const subjectExists = await this.prisma.subject.findUnique({
       where: {

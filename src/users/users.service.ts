@@ -15,8 +15,7 @@ export class UsersService {
   constructor(private readonly prisma: PrismaService) {}
 
   async createTeacher(body: CreateTeacherProfileDto) {
-    const { email, name, password, address, contact, courseId, subjects } =
-      body;
+    const { email, name, password, address, contact, courseId } = body;
 
     const existingUser = await this.prisma.user.findUnique({
       where: {
@@ -35,25 +34,13 @@ export class UsersService {
 
     const teacher = await this.prisma.user.create({
       data: {
-        email,
         name,
-        password: hashedPassword,
-        address,
+        email,
         contact,
+        address,
+        password: hashedPassword,
+        courseId,
         role: RoleType.TEACHER,
-        courseId,
-      },
-    });
-
-    await this.prisma.subject.updateMany({
-      where: {
-        id: {
-          in: subjects,
-        },
-      },
-      data: {
-        teacherId: teacher.id,
-        courseId,
       },
     });
 
@@ -178,7 +165,7 @@ export class UsersService {
   async editStudent(id: number, body: CreateStudentProfileDto) {
     const iStudent = await this.prisma.user.findUnique({
       where: {
-        id,
+        id: Number(id),
         role: RoleType.STUDENT,
       },
     });
@@ -237,6 +224,26 @@ export class UsersService {
     });
 
     return students;
+  }
+
+  async getTeachers() {
+    const teachers = await this.prisma.user.findMany({
+      where: {
+        role: RoleType.TEACHER,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        address: true,
+        Subject: true,
+        contact: true,
+        course: { select: { name: true, id: true } },
+      },
+    });
+
+    return teachers;
   }
 
   async deleteTeacher(id: number) {

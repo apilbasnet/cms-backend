@@ -18,9 +18,6 @@ export class CreateTeacherProfileDto {
 
   @IsNumber()
   public courseId: number;
-
-  @IsNumber({}, { each: true })
-  public subjects: number[];
 }
 
 export class EditTeacherProfileDto {

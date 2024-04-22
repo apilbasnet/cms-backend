@@ -40,6 +40,12 @@ export class UsersController {
   }
 
   @UseGuards(AdminGuard)
+  @Get('/teacher')
+  getTeachers() {
+    return this.usersService.getTeachers();
+  }
+
+  @UseGuards(AdminGuard)
   @Post('/student')
   createStudent(@Body() body: CreateStudentProfileDto) {
     return this.usersService.createStudent(body);
@@ -53,8 +59,8 @@ export class UsersController {
 
   @UseGuards(AdminGuard)
   @Patch('/student/:id')
-  editStudent(@Param() id: number, @Body() body: CreateStudentProfileDto) {
-    return this.usersService.editStudent(id, body);
+  editStudent(@Param('id') id: number, @Body() body: CreateStudentProfileDto) {
+    return this.usersService.editStudent(Number(id), body);
   }
 
   @UseGuards(AdminGuard)

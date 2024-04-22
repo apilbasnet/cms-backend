@@ -70,12 +70,13 @@ model Subject {
 
 model Notification {
     id        Int      @id @default(autoincrement())
-    title     String
+    title     String    
     message   String
     sentBy    User     @relation(fields: [sentById], references: [id])
     sentById  Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
+    sentToId  Int
 }
 
 enum RoleType {

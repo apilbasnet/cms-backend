@@ -49,6 +49,12 @@ export class CoursesController {
   }
 
   @UseGuards(AdminGuard)
+  @Get('/subjects')
+  async getSubject() {
+    return this.service.getSubject();
+  }
+
+  @UseGuards(AdminGuard)
   @Patch('/subjects/:id')
   async editSubject(@Param('id') id: number, @Body() body: EditSubjectDto) {
     return this.service.editSubject(id, body);
