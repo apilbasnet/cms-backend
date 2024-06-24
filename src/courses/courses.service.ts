@@ -127,7 +127,7 @@ export class CoursesService {
   public async editSubject(id: number, body: EditSubjectDto) {
     const subjectExists = await this.prisma.subject.findUnique({
       where: {
-        id,
+        id: Number(id),
       },
     });
 
@@ -137,7 +137,7 @@ export class CoursesService {
 
     const subject = await this.prisma.subject.update({
       where: {
-        id,
+        id: Number(id),
       },
       data: {
         name: body.name,
@@ -161,7 +161,7 @@ export class CoursesService {
 
   public async deleteSubject(id: number) {
     const res = await this.prisma.subject.delete({
-      where: { id },
+      where: { id: Number(id) },
     });
 
     if (!res) {

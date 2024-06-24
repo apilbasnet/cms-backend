@@ -65,7 +65,7 @@ export class UsersController {
 
   @UseGuards(AdminGuard)
   @Delete('/teacher/:id')
-  deleteTeacher(@Param() id: number) {
+  deleteTeacher(@Param('id') id: number) {
     return this.usersService.deleteTeacher(id);
   }
 
