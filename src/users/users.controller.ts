@@ -53,8 +53,8 @@ export class UsersController {
 
   @UseGuards(AdminGuard)
   @Patch('/teacher/:id')
-  editTeacher(@Param() id: number, @Body() body: EditTeacherProfileDto) {
-    return this.usersService.editTeacher(id, body);
+  editTeacher(@Param('id') id: number, @Body() body: EditTeacherProfileDto) {
+    return this.usersService.editTeacher(Number(id), body);
   }
 
   @UseGuards(AdminGuard)
