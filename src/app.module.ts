@@ -11,11 +11,18 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { NextFunction, Request, Response } from 'express';
 import { User } from '@prisma/client';
 import { AlsModule, ContextData } from './store.module';
+import { AttendanceController } from './attendance/attendance.controller';
+import { AttendanceService } from './attendance/attendance.service';
 
 @Module({
   imports: [ConfigModule.forRoot(), PrismaModule.forRoot(), AlsModule],
-  controllers: [AppController, UsersController, CoursesController],
-  providers: [AppService, UsersService, CoursesService],
+  controllers: [
+    AppController,
+    UsersController,
+    CoursesController,
+    AttendanceController,
+  ],
+  providers: [AppService, UsersService, CoursesService, AttendanceService],
   exports: [],
 })
 export class AppModule implements NestModule {

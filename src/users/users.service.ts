@@ -333,4 +333,22 @@ export class UsersService {
       },
     };
   }
+
+  public async getOverallAttendance(studentId: number, semesterId: number) {
+    const attendance = await this.prisma.attendance.groupBy({
+      by: ['subjectId'],
+      where: {
+        userId: studentId,
+        subject: {
+          semesterId,
+        },
+        present: true,
+      },
+      _count: {
+        present: true,
+      },
+    });
+
+    return attendance;
+  }
 }

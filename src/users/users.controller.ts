@@ -14,6 +14,7 @@ import { AuthGuard } from '../guards/auth.guard';
 import { ContextData } from '../store.module';
 import { AsyncLocalStorage } from 'async_hooks';
 import { AdminGuard } from '../guards/admin.guard';
+import { StudentGuard } from '../guards/student.guard';
 import {
   CreateStudentProfileDto,
   CreateTeacherProfileDto,
@@ -93,5 +94,15 @@ export class UsersController {
       contact: user.contact,
       id: user.id,
     };
+  }
+
+  @UseGuards(StudentGuard)
+  @Get('/my-overall-attendance')
+  async myAttendance() {
+    const user = this.store.getStore()!.user!;
+
+    if (!user.semesterId) return [];
+
+    return this.usersService.getOverallAttendance(user.id, user.semesterId);
   }
 }
