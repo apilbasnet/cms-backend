@@ -23,11 +23,9 @@ async function seedUsers() {
 }
 
 async function seedSemester() {
-  const exists = await prisma.semester.findMany({
-    take: 1,
-  });
+  const exists = await prisma.semester.count();
 
-  if (exists.length === 0) {
+  if (!exists) {
     await prisma.semester.createMany({
       data: Array.from(
         {

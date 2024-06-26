@@ -24,6 +24,19 @@ model User {
     updatedAt      DateTime       @updatedAt
     Notification   Notification[]
     Subject        Subject[]
+    Attendance     Attendance[]
+}
+
+model Attendance {
+    id        Int      @id @default(autoincrement())
+    date      DateTime
+    present   Boolean
+    subject   Subject  @relation(fields: [subjectId], references: [id])
+    subjectId Int
+    user      User     @relation(fields: [userId], references: [id])
+    userId    Int
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
 }
 
 model Token {
@@ -56,21 +69,22 @@ model Semester {
 }
 
 model Subject {
-    id         Int      @id @default(autoincrement())
+    id         Int          @id @default(autoincrement())
     name       String
-    code       String   @unique
-    semester   Semester @relation(fields: [semesterId], references: [id])
+    code       String       @unique
+    semester   Semester     @relation(fields: [semesterId], references: [id])
     semesterId Int
     courseId   Int
-    teacher    User     @relation(fields: [teacherId], references: [id])
+    teacher    User         @relation(fields: [teacherId], references: [id])
     teacherId  Int
-    createdAt  DateTime @default(now())
-    updatedAt  DateTime @updatedAt
+    createdAt  DateTime     @default(now())
+    updatedAt  DateTime     @updatedAt
+    Attendance Attendance[]
 }
 
 model Notification {
     id        Int      @id @default(autoincrement())
-    title     String    
+    title     String
     message   String
     sentBy    User     @relation(fields: [sentById], references: [id])
     sentById  Int
