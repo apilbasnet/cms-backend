@@ -36,6 +36,9 @@ export class EditTeacherProfileDto {
   @IsNumber()
   public courseId: number;
 
+  @IsString()
+  public password: string;
+
   @IsNumber({}, { each: true })
   public subjects: number[];
 }

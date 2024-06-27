@@ -8,7 +8,7 @@ import {
   CreateTeacherProfileDto,
   EditTeacherProfileDto,
 } from './dto/profile.dto';
-import { RoleType } from '@prisma/client';
+import { RoleType, User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
@@ -121,7 +121,10 @@ export class UsersService {
       throw new HttpException('Teacher does not exist', HttpStatus.NOT_FOUND);
     }
 
-    const { email, name, address, contact, courseId, subjects } = body;
+    const { email, name, address, contact, courseId, subjects, password } =
+      body;
+
+    const newPassword = await hash(password);
 
     const teacher = await this.prisma.user.update({
       where: {
@@ -134,6 +137,7 @@ export class UsersService {
         address,
         contact,
         courseId,
+        password: newPassword,
       },
     });
 
@@ -174,7 +178,17 @@ export class UsersService {
       throw new HttpException('Student does not exist', HttpStatus.NOT_FOUND);
     }
 
-    const { email, name, address, contact, courseId, activeSemester } = body;
+    const {
+      email,
+      name,
+      address,
+      contact,
+      courseId,
+      activeSemester,
+      password,
+    } = body;
+
+    const newPassword = await hash(password);
 
     const student = await this.prisma.user.update({
       where: {
@@ -188,6 +202,7 @@ export class UsersService {
         contact,
         courseId,
         semesterId: activeSemester,
+        password: newPassword,
       },
     });
 
@@ -204,7 +219,59 @@ export class UsersService {
     };
   }
 
-  async getStudents() {
+  async getMyStudents(user: User) {
+    const mySubjects = await this.prisma.subject.findMany({
+      where: {
+        teacherId: user.id,
+      },
+    });
+
+    const students = await this.prisma.user.findMany({
+      where: {
+        role: RoleType.STUDENT,
+        semesterId: {
+          in: mySubjects.map((m) => m.semesterId),
+        },
+        courseId: {
+          in: mySubjects.map((m) => m.courseId),
+        },
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        address: true,
+        contact: true,
+        activeSemester: {
+          select: { name: true, id: true },
+        },
+        course: { select: { name: true, id: true } },
+      },
+    });
+
+    const std = await this.prisma.$transaction(
+      students
+        .filter((s) => s.activeSemester != null && s.course != null)
+        .map((m) => {
+          return this.prisma.subject.findMany({
+            where: {
+              teacherId: user.id,
+              semesterId: m.activeSemester!.id,
+              courseId: m.course!.id,
+            },
+          });
+        }),
+    );
+
+    return students.map((s) => ({
+      ...s,
+      subjects: std,
+    }));
+  }
+
+  async getStudents(user: User, me: boolean) {
+    if (me) return this.getMyStudents(user);
     const students = await this.prisma.user.findMany({
       where: {
         role: RoleType.STUDENT,
@@ -332,23 +399,5 @@ export class UsersService {
         id: existingUser.id,
       },
     };
-  }
-
-  public async getOverallAttendance(studentId: number, semesterId: number) {
-    const attendance = await this.prisma.attendance.groupBy({
-      by: ['subjectId'],
-      where: {
-        userId: studentId,
-        subject: {
-          semesterId,
-        },
-        present: true,
-      },
-      _count: {
-        present: true,
-      },
-    });
-
-    return attendance;
   }
 }

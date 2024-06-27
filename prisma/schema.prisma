@@ -31,8 +31,6 @@ model Attendance {
     id        Int      @id @default(autoincrement())
     date      String
     present   Boolean
-    subject   Subject  @relation(fields: [subjectId], references: [id])
-    subjectId Int
     user      User     @relation(fields: [userId], references: [id])
     userId    Int
     createdAt DateTime @default(now())
@@ -69,17 +67,16 @@ model Semester {
 }
 
 model Subject {
-    id         Int          @id @default(autoincrement())
+    id         Int      @id @default(autoincrement())
     name       String
-    code       String       @unique
-    semester   Semester     @relation(fields: [semesterId], references: [id])
+    code       String   @unique
+    semester   Semester @relation(fields: [semesterId], references: [id])
     semesterId Int
     courseId   Int
-    teacher    User         @relation(fields: [teacherId], references: [id])
+    teacher    User     @relation(fields: [teacherId], references: [id])
     teacherId  Int
-    createdAt  DateTime     @default(now())
-    updatedAt  DateTime     @updatedAt
-    Attendance Attendance[]
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }
 
 model Notification {

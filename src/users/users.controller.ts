@@ -3,9 +3,11 @@ import {
   Controller,
   Delete,
   Get,
+  NotFoundException,
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
@@ -14,7 +16,6 @@ import { AuthGuard } from '../guards/auth.guard';
 import { ContextData } from '../store.module';
 import { AsyncLocalStorage } from 'async_hooks';
 import { AdminGuard } from '../guards/admin.guard';
-import { StudentGuard } from '../guards/student.guard';
 import {
   CreateStudentProfileDto,
   CreateTeacherProfileDto,
@@ -34,13 +35,17 @@ export class UsersController {
     return this.usersService.createTeacher(body);
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   @Get('/student')
-  getStudents() {
-    return this.usersService.getStudents();
+  getStudents(@Query('my') onlyMe: string = 'false') {
+    const me = this.store.getStore()?.user;
+
+    if (!me) throw new NotFoundException();
+
+    return this.usersService.getStudents(me, onlyMe === 'true');
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   @Get('/teacher')
   getTeachers() {
     return this.usersService.getTeachers();
@@ -94,15 +99,5 @@ export class UsersController {
       contact: user.contact,
       id: user.id,
     };
-  }
-
-  @UseGuards(StudentGuard)
-  @Get('/my-overall-attendance')
-  async myAttendance() {
-    const user = this.store.getStore()!.user!;
-
-    if (!user.semesterId) return [];
-
-    return this.usersService.getOverallAttendance(user.id, user.semesterId);
   }
 }

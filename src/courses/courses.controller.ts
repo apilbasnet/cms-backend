@@ -48,7 +48,7 @@ export class CoursesController {
     return this.service.createSubject(body);
   }
 
-  @UseGuards(AdminGuard)
+  @UseGuards(AuthGuard)
   @Get('/subjects')
   async getSubject() {
     return this.service.getSubject();
