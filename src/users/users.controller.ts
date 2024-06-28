@@ -21,7 +21,7 @@ import {
   CreateTeacherProfileDto,
   EditTeacherProfileDto,
 } from './dto/profile.dto';
-import { StaffGuard } from 'src/guards/staff.guard';
+import { StaffGuard } from '../guards/staff.guard';
 import { NotifyDto } from './dto/notify.dto';
 
 @Controller('users')
