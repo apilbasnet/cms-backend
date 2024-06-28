@@ -15,10 +15,10 @@ model User {
     address        String
     password       String
     token          Token?
-    activeSemester Semester?      @relation(fields: [semesterId], references: [id])
+    activeSemester Semester?      @relation(fields: [semesterId], references: [id], onDelete: SetNull)
     semesterId     Int?
     role           RoleType
-    course         Course?        @relation(fields: [courseId], references: [id])
+    course         Course?        @relation(fields: [courseId], references: [id], onDelete: SetNull)
     courseId       Int?
     createdAt      DateTime       @default(now())
     updatedAt      DateTime       @updatedAt
@@ -31,7 +31,7 @@ model Attendance {
     id        Int      @id @default(autoincrement())
     date      String
     present   Boolean
-    user      User     @relation(fields: [userId], references: [id])
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId    Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -40,7 +40,7 @@ model Attendance {
 model Token {
     id        Int      @id @default(autoincrement())
     token     String   @unique
-    user      User     @relation(fields: [userId], references: [id])
+    user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
     userId    Int      @unique
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
@@ -59,7 +59,7 @@ model Semester {
     id        Int       @id @default(autoincrement())
     name      String
     subjects  Subject[]
-    course    Course?   @relation(fields: [courseId], references: [id])
+    course    Course?   @relation(fields: [courseId], references: [id], onDelete: SetNull)
     courseId  Int?
     users     User[]
     createdAt DateTime  @default(now())
@@ -70,10 +70,10 @@ model Subject {
     id         Int      @id @default(autoincrement())
     name       String
     code       String   @unique
-    semester   Semester @relation(fields: [semesterId], references: [id])
+    semester   Semester @relation(fields: [semesterId], references: [id], onDelete: Cascade)
     semesterId Int
     courseId   Int
-    teacher    User     @relation(fields: [teacherId], references: [id])
+    teacher    User     @relation(fields: [teacherId], references: [id], onDelete: Cascade)
     teacherId  Int
     createdAt  DateTime @default(now())
     updatedAt  DateTime @updatedAt
@@ -83,7 +83,7 @@ model Notification {
     id        Int      @id @default(autoincrement())
     title     String
     message   String
-    sentBy    User     @relation(fields: [sentById], references: [id])
+    sentBy    User     @relation(fields: [sentById], references: [id], onDelete: Cascade)
     sentById  Int
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
