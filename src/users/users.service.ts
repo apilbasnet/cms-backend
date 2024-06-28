@@ -462,6 +462,14 @@ export class UsersService {
       where: {
         sentToId: user.id,
       },
+      include: {
+        sentBy: {
+          select: {
+            name: true,
+            id: true,
+          },
+        },
+      },
     });
 
     return notifications;
