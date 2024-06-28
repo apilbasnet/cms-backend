@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { LoginDto } from './dto/login.dto';
 import { hash, verify } from '@node-rs/argon2';
 import { generateToken } from '../utils/generate-token';
@@ -9,6 +14,7 @@ import {
   EditTeacherProfileDto,
 } from './dto/profile.dto';
 import { RoleType, User } from '@prisma/client';
+import { NotifyDto } from './dto/notify.dto';
 
 @Injectable()
 export class UsersService {
@@ -399,5 +405,65 @@ export class UsersService {
         id: existingUser.id,
       },
     };
+  }
+
+  async notifyAll(dto: NotifyDto) {
+    const users = await this.prisma.user.findMany({
+      where: {
+        role: dto.role,
+      },
+    });
+
+    await this.prisma.notification.createMany({
+      data: users.map((u) => ({
+        title: dto.title,
+        message: dto.message,
+        sentToId: u.id,
+        sentById: dto.sentToId,
+      })),
+    });
+
+    return {
+      message: 'Notification sent successfully',
+    };
+  }
+
+  async notify(dto: NotifyDto, me: User) {
+    const isGlobal = dto.sentToId < 0;
+
+    if (isGlobal) return this.notifyAll(dto);
+
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: dto.sentToId,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('User does not exist');
+    }
+
+    await this.prisma.notification.create({
+      data: {
+        title: dto.title,
+        message: dto.message,
+        sentToId: dto.sentToId,
+        sentById: me.id,
+      },
+    });
+
+    return {
+      message: 'Notification sent successfully',
+    };
+  }
+
+  async getNotifications(user: User) {
+    const notifications = await this.prisma.notification.findMany({
+      where: {
+        sentToId: user.id,
+      },
+    });
+
+    return notifications;
   }
 }

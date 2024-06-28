@@ -21,6 +21,8 @@ import {
   CreateTeacherProfileDto,
   EditTeacherProfileDto,
 } from './dto/profile.dto';
+import { StaffGuard } from 'src/guards/staff.guard';
+import { NotifyDto } from './dto/notify.dto';
 
 @Controller('users')
 export class UsersController {
@@ -84,6 +86,26 @@ export class UsersController {
   @Post('/login')
   async login(@Body() body: LoginDto) {
     return this.usersService.login(body);
+  }
+
+  @UseGuards(AuthGuard)
+  @Get('/notifications')
+  async getNotifications() {
+    const me = this.store.getStore()?.user;
+
+    if (!me) throw new NotFoundException();
+
+    return this.usersService.getNotifications(me);
+  }
+
+  @UseGuards(StaffGuard)
+  @Post('/notify')
+  async notify(@Body() body: NotifyDto) {
+    const me = this.store.getStore()?.user;
+
+    if (!me) throw new NotFoundException();
+
+    return this.usersService.notify(body, me);
   }
 
   @UseGuards(AuthGuard)
